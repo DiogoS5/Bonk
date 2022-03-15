@@ -74,13 +74,13 @@ while run:
     ball.x += ball_speed_x
     ball.y += ball_speed_y
     #Pads movement
-    if keys[pg.K_w]:
+    if keys[pg.K_w] and pad1.top > 0:
         pad1.y -= 5
-    if keys[pg.K_s]:
+    if keys[pg.K_s] and c:
         pad1.y += 5 
-    if keys[pg.K_UP]:
+    if keys[pg.K_UP] and pad2.top > 0:
         pad2.y -= 5
-    if keys[pg.K_DOWN]:
+    if keys[pg.K_DOWN] and pad2.bottom < HEIGHT:
         pad2.y += 5
 
     #Collisions
