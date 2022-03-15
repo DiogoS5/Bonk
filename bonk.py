@@ -1,7 +1,5 @@
-from cmath import sqrt
-from re import S
 import pygame as pg
-import random, os, math
+import random, os
 
 pg.init()
 
@@ -30,7 +28,7 @@ SCREEN.fill((BLACK))
 ball_width = 10
 ball_height = 10
 ball = pg.Rect((WIDTH-ball_width)/2, (HEIGHT-ball_height)/2, ball_width, ball_height)
-ball_speed_x = 5
+ball_speed_x = 10
 
 #Paddles
 pad_width = 10 
@@ -75,13 +73,13 @@ while run:
     ball.y += ball_speed_y
     #Pads movement
     if keys[pg.K_w] and pad1.top > 0:
-        pad1.y -= 5
-    if keys[pg.K_s] and c:
-        pad1.y += 5 
+        pad1.y -= 10
+    if keys[pg.K_s] and pad1.bottom < HEIGHT:
+        pad1.y += 10
     if keys[pg.K_UP] and pad2.top > 0:
-        pad2.y -= 5
+        pad2.y -= 10
     if keys[pg.K_DOWN] and pad2.bottom < HEIGHT:
-        pad2.y += 5
+        pad2.y += 10
 
     #Collisions
     if pg.Rect.colliderect(ball, pad1) or pg.Rect.colliderect(ball, pad2):
