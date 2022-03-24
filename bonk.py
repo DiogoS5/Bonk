@@ -31,6 +31,17 @@ start = font.render('START', True, WHITE)
 startRect = start.get_rect()
 startRect.center = (WIDTH/2, HEIGHT/2)
 
+player1 = font.render('Player 1', True, WHITE)
+player1Rect = player1.get_rect()
+player1Rect.center = (250, 450)
+
+Player2 = fot.render('Player 2', True, WHite)
+Player2Rect = player2.get_rect()
+Player2Rect.center = (750, 450)
+
+red1 = pg.Rect(50, 550, pad_width, pad_height)
+green1 = pg.Rect(100
+
 #GAME SETUP
 #countdown
 count = '3'
@@ -84,8 +95,13 @@ while run:
                 run = False
             if event.type == pg.MOUSEBUTTONDOWN:
                 click = pg.mouse.get_pos()
-        #Buttons
+        #Button
         SCREEN.blit(start, startRect)
+        SCREEN.blit(player1, player1Rect)
+        SCREEN.blit(player2, player2Rect)
+        SCREEN.draw(red1)
+        
+        
         #Clicks
         if startRect.left <= click[0] <= startRect.right and startRect.top <= click[1] <= startRect.bottom:
             click = (0,0)
