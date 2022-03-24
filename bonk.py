@@ -1,3 +1,14 @@
+'''player1 = font.render('Player 1', True, WHITE)
+player1Rect = player1.get_rect()
+player1Rect.center = (250, 450)
+
+Player2 = fot.render('Player 2', True, WHite)
+Player2Rect = player2.get_rect()
+Player2Rect.center = (750, 450)
+
+red1 = pg.Rect(50, 550, pad_width, pad_height)
+green1 = pg.Rect(100'''
+
 import pygame as pg
 import random, os
 from math import sqrt
@@ -31,18 +42,13 @@ start = font.render('START', True, WHITE)
 startRect = start.get_rect()
 startRect.center = (WIDTH/2, HEIGHT/2)
 
-player1 = font.render('Player 1', True, WHITE)
-player1Rect = player1.get_rect()
-player1Rect.center = (250, 450)
-
-Player2 = fot.render('Player 2', True, WHite)
-Player2Rect = player2.get_rect()
-Player2Rect.center = (750, 450)
-
-red1 = pg.Rect(50, 550, pad_width, pad_height)
-green1 = pg.Rect(100
-
 #GAME SETUP
+#sounds
+hitsound = pg.mixer.Sound('audio/hitsound.wav')
+ps2 = pg.mixer.Sound('audio/ps2.wav')
+#music
+giorgio = pg.mixer.music.load('audio/giorgio.mp3')
+
 #countdown
 count = '3'
 centertxt = font.render(count, True, WHITE)
@@ -64,8 +70,10 @@ ball_height = 10
 ball = pg.Rect((WIDTH-ball_width)/2, (HEIGHT-ball_height)/2, ball_width, ball_height)
 ball_speed_default = 7
 ball_speed = ball_speed_default
+ball_speed_y = 0
+ball_speed_x = 0
 #Paddles
-pad_width = 10 
+pad_width = 10
 pad_height = 80
 pad_speed = 5
 #Paddle 1
@@ -79,15 +87,20 @@ clock = pg.time.Clock()
 SCREEN.fill((BLACK))
 
 
+
 #Run Loop
 run = True
 menu = True
 game = False
+ps2.play()
+pg.mixer.music.play()
 while run:
     #Menu
     while menu:
         clock.tick(FPS)
         SCREEN.fill(BLACK)
+        #Buttons
+        SCREEN.blit(start, startRect)
         #Events
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -95,13 +108,6 @@ while run:
                 run = False
             if event.type == pg.MOUSEBUTTONDOWN:
                 click = pg.mouse.get_pos()
-        #Button
-        SCREEN.blit(start, startRect)
-        SCREEN.blit(player1, player1Rect)
-        SCREEN.blit(player2, player2Rect)
-        SCREEN.draw(red1)
-        
-        
         #Clicks
         if startRect.left <= click[0] <= startRect.right and startRect.top <= click[1] <= startRect.bottom:
             click = (0,0)
@@ -109,9 +115,10 @@ while run:
             game = True
         pg.display.update()
         
+
     #Game Loop
     reset = True
-    reset_time = -1500
+    reset_time = pg.time.get_ticks()
     hits = 0
     while game:
         clock.tick(FPS)
@@ -127,7 +134,7 @@ while run:
 
         #Reset
         if reset:
-            if score1 == 1:
+            if score1 == 5:
                 centertxt = font.render('PLAYER 1 WINS!', True, WHITE)
                 centertxtRect = centertxt.get_rect()
                 centertxtRect.center = (WIDTH/2, HEIGHT/3)
@@ -139,7 +146,7 @@ while run:
                     menu = True
                     reset = False
                     game = False
-            elif score2 == 1:
+            elif score2 == 5:
                 centertxt = font.render('PLAYER 2 WINS!', True, WHITE)
                 centertxtRect = centertxt.get_rect()
                 centertxtRect.center = (WIDTH/2, HEIGHT/3)
@@ -153,8 +160,6 @@ while run:
                     game = False
             else:
                 time_delta = pg.time.get_ticks() - reset_time
-                centertxt = font.render(count, True, WHITE)
-                SCREEN.blit(centertxt, centertxtRect)
                 if time_delta < 500:
                     count = '3'
                 elif time_delta < 1000:
@@ -166,6 +171,10 @@ while run:
                     ball_speed_x = int(sqrt(ball_speed**2 - abs(ball_speed_y)**2))
                     ball_speed_x *= random.choice([-1, 1])
                     reset = False
+                centertxt = font.render(count, True, WHITE)
+                centertxtRect = centertxt.get_rect()
+                centertxtRect.center = (WIDTH/2, HEIGHT/3)
+                SCREEN.blit(centertxt, centertxtRect)
         #Events
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -188,6 +197,7 @@ while run:
 
         #Collisions
         if pg.Rect.colliderect(ball, pad1) and pad1.bottom > ball.centery and pad1.top < ball.centery:
+            hitsound.play()
             hits += 1
             if hits%3 == 0:
                 ball_speed += 1
@@ -195,6 +205,7 @@ while run:
             ball_speed_y = int(ratio*abs(ball_speed/sqrt(2)))
             ball_speed_x = int(sqrt(ball_speed**2 - ball_speed_y**2))
         if pg.Rect.colliderect(ball, pad2) and pad2.bottom > ball.centery and pad2.top < ball.centery:
+            hitsound.play()
             hits += 1
             if hits%5 == 0:
                 ball_speed += 1
@@ -206,6 +217,7 @@ while run:
 
         #End/Score
         if ball.left <= 0 or ball.right >= WIDTH:
+            hitsound.play()
             if ball.left <= 0:
                 score2 += 1
             else:
