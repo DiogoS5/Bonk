@@ -42,7 +42,7 @@ player2Rect.topright = (1000 - 50 , 200)
 skin = smallfont.render('Skin', True, WHITE)
 skinRect = skin.get_rect()
 skinRect = (WIDTH/2, 300) 
-###
+
 pad_width = 10
 pad_height = 80
 ball_width = 10
