@@ -19,6 +19,7 @@ ORANGE = (249, 142, 29)
 GULF = (201, 223, 236)
 color1 = WHITE
 color2 = WHITE
+ball_color = WHITE
 
 #Screen
 SCREEN = pg.display.set_mode([WIDTH, HEIGHT])
@@ -38,8 +39,19 @@ player1Rect.topleft = (50, 200)
 player2 = smallfont.render('Player 2', True, WHITE)
 player2Rect = player2.get_rect()
 player2Rect.topright = (1000 - 50 , 200)
+skin = smallfont.render('Skin', True, WHITE)
+skinRect = skin.get_rect()
+skinRect = (WIDTH/2, 300) 
+###
 pad_width = 10
 pad_height = 80
+ball_width = 10
+ball_height = 10
+
+skin1 = pg.Rect(WIDTH/3, 400, ball_width, ball_height)
+skin2 = pg.Rect(WIDTH/2, 400, ball_width, ball_height)
+skin3 = pg.Rect(WIDTH*2/3, 400, ball_width, ball_height)
+###
 red1 = pg.Rect(100, 300, pad_width, pad_height)
 yellow1 = pg.Rect(120, 300, pad_width, pad_height)
 green1 = pg.Rect(140, 300, pad_width, pad_height)
@@ -48,6 +60,7 @@ blue2 = pg.Rect(WIDTH - 10 - 100, 300, pad_width, pad_height)
 green2 = pg.Rect(WIDTH - 10  - 120, 300, pad_width, pad_height)
 yellow2 = pg.Rect(WIDTH - 10  - 140, 300, pad_width, pad_height)
 red2 = pg.Rect(WIDTH - 10  - 160, 300, pad_width, pad_height)
+
 #GAME SETUP
 #sounds
 hitsound = pg.mixer.Sound('audio/hitsound.wav')
@@ -55,6 +68,7 @@ claps  = pg.mixer.Sound('audio/claps.wav')
 #music
 giorgio = pg.mixer.music.load('audio/giorgio.mp3')
 darude = pg.mixer.music.load('audio/darude.mp3')
+tron = pg.mixer.music.load('audio/tron.mp3')
 #countdown
 count = '3'
 centertxt = bigfont.render(count, True, WHITE)
@@ -71,8 +85,6 @@ score2txtRect = score2txt.get_rect()
 score2txtRect.center = (WIDTH-200, 50)
 
 #Ball
-ball_width = 10
-ball_height = 10
 ball = pg.Rect((WIDTH-ball_width)/2, (HEIGHT-ball_height)/2, ball_width, ball_height)
 ball_speed_default = 8
 ball_speed = ball_speed_default
@@ -111,6 +123,7 @@ while run:
         SCREEN.blit(start, startRect)
         SCREEN.blit(player1, player1Rect)
         SCREEN.blit(player2, player2Rect)
+        SCREEN.blit(skin, skinRect)
         if click[0] <= 500:
             pg.draw.rect(SCREEN, RED, red1)
             pg.draw.rect(SCREEN, YELLOW, yellow1)
@@ -122,6 +135,9 @@ while run:
             pg.draw.rect(SCREEN, GREEN, green2)
             pg.draw.rect(SCREEN, BLUE, blue2)
         #Clicks
+        if skin1.collidepoint(click): 
+            
+        
         if red1.collidepoint(click):
             color1 = RED
             pg.draw.rect(SCREEN, BLACK, red1)
