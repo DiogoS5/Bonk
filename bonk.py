@@ -20,7 +20,6 @@ GULF = (201, 223, 236)
 color1 = WHITE
 color2 = WHITE
 ball_color = WHITE
-
 #Screen
 SCREEN = pg.display.set_mode([WIDTH, HEIGHT])
 pg.display.set_caption("Bonk")
@@ -30,6 +29,7 @@ SCREEN.fill((BLACK))
 #Buttons
 bigfont = pg.font.SysFont('suigeneris', 60)
 smallfont = pg.font.SysFont('suigeneris', 40)
+
 start = bigfont.render('START', True, WHITE)
 startRect = start.get_rect()
 startRect.center = (WIDTH/2, HEIGHT/2)
@@ -39,19 +39,12 @@ player1Rect.topleft = (50, 200)
 player2 = smallfont.render('Player 2', True, WHITE)
 player2Rect = player2.get_rect()
 player2Rect.topright = (1000 - 50 , 200)
-skin = smallfont.render('Skin', True, WHITE)
-skinRect = skin.get_rect()
-skinRect = (WIDTH/2, 300) 
+skip = bigfont.render('>>', True, WHITE)
+skipRect = skip.get_rect()
+skipRect.center = (WIDTH/2, 100)
 
 pad_width = 10
 pad_height = 80
-ball_width = 10
-ball_height = 10
-
-skin1 = pg.Rect(WIDTH/3, 400, ball_width, ball_height)
-skin2 = pg.Rect(WIDTH/2, 400, ball_width, ball_height)
-skin3 = pg.Rect(WIDTH*2/3, 400, ball_width, ball_height)
-###
 red1 = pg.Rect(100, 300, pad_width, pad_height)
 yellow1 = pg.Rect(120, 300, pad_width, pad_height)
 green1 = pg.Rect(140, 300, pad_width, pad_height)
@@ -61,14 +54,20 @@ green2 = pg.Rect(WIDTH - 10  - 120, 300, pad_width, pad_height)
 yellow2 = pg.Rect(WIDTH - 10  - 140, 300, pad_width, pad_height)
 red2 = pg.Rect(WIDTH - 10  - 160, 300, pad_width, pad_height)
 
+ballcolor = smallfont.render('BALL COLOR', True, WHITE)
+ballcolorRect = ballcolor.get_rect()
+ballcolorRect.center = (WIDTH/2, 450)
+ball_width = 10
+ball_height = 10
+ballcolor1 = pg.Rect(400, 500, ball_width, ball_height)
+ballcolor2 = pg.Rect(500, 500, ball_width, ball_height)
+ballcolor3 = pg.Rect(600, 500, ball_width, ball_height)
 #GAME SETUP
 #sounds
 hitsound = pg.mixer.Sound('audio/hitsound.wav')
-claps  = pg.mixer.Sound('audio/claps.wav')
+hit = pg.mixer.Sound('audio/hit.wav')
 #music
-giorgio = pg.mixer.music.load('audio/giorgio.mp3')
-darude = pg.mixer.music.load('audio/darude.mp3')
-tron = pg.mixer.music.load('audio/tron.mp3')
+playlist = ['audio/skepta.mp3', 'audio/darude.mp3', 'audio/giorgio.mp3']
 #countdown
 count = '3'
 centertxt = bigfont.render(count, True, WHITE)
@@ -105,9 +104,13 @@ clock = pg.time.Clock()
 run = True
 menu = True
 game = False
+pg.mixer.music.load('audio/ps2.mp3')
+skips = 0
+for song in playlist:
+    pg.mixer.music.queue(song)
 pg.mixer.music.play()
 while run:
-    click = (500, 0)
+    click = (500, 450)
     SCREEN.fill((BLACK))
     #Menu
     while menu:
@@ -123,11 +126,8 @@ while run:
         SCREEN.blit(start, startRect)
         SCREEN.blit(player1, player1Rect)
         SCREEN.blit(player2, player2Rect)
-        SCREEN.blit(skin, skinRect)
-        
-        pg.draw.rect(SCREEN, YELLOW, skin1)
-        pg.draw.rect(SCREEN, GREEN, skin2)
-        pg.draw.rect(SCREEN, BLUE, skin3)
+        SCREEN.blit(skip, skipRect)
+        SCREEN.blit(ballcolor, ballcolorRect)
         
         if click[0] <= 500:
             pg.draw.rect(SCREEN, RED, red1)
@@ -139,18 +139,11 @@ while run:
             pg.draw.rect(SCREEN, YELLOW, yellow2)
             pg.draw.rect(SCREEN, GREEN, green2)
             pg.draw.rect(SCREEN, BLUE, blue2)
+        if click[1] >= 400:
+            pg.draw.rect(SCREEN, YELLOW, ballcolor1)
+            pg.draw.rect(SCREEN, WHITE, ballcolor2)
+            pg.draw.rect(SCREEN, BLUE, ballcolor3)
         #Clicks
-        if skin1.collidepoint(click): 
-            ball_color = YELLOW
-            pg.draw.rect(SCREEN, BLACK, skin1)
-        if skin2.collidepoint(click): 
-            ball_color = GREEN
-            pg.draw.rect(SCREEN, BLACK, skin2)
-         
-        if skin3.collidepoint(click): 
-            ball_color = BLUE
-            pg.draw.rect(SCREEN, BLACK, skin3)
-        
         if red1.collidepoint(click):
             color1 = RED
             pg.draw.rect(SCREEN, BLACK, red1)
@@ -175,7 +168,26 @@ while run:
         if blue2.collidepoint(click):
             color2 = BLUE
             pg.draw.rect(SCREEN, BLACK, blue2)
-            
+        if ballcolor1.collidepoint(click): 
+            ball_color = YELLOW
+            pg.draw.rect(SCREEN, BLACK, ballcolor1)
+        if ballcolor2.collidepoint(click): 
+            ball_color = WHITE
+            pg.draw.rect(SCREEN, BLACK, ballcolor2)
+        if ballcolor3.collidepoint(click): 
+            ball_color = BLUE
+            pg.draw.rect(SCREEN, BLACK, ballcolor3)
+        if skipRect.collidepoint(click):
+            skips += 1
+            if skips >= len(playlist):
+                skips = 0
+            pg.mixer.music.stop()
+            pg.mixer.music.unload()
+            pg.mixer.music.load(playlist[skips])
+            pg.mixer.music.play()
+            for song in playlist[skips+1:]:
+                pg.mixer.music.queue(song)
+            click = (0,0)
         if startRect.collidepoint(click):
             click = (0,0)
             menu = False
@@ -198,13 +210,12 @@ while run:
         #Draw
         pg.draw.rect(SCREEN, color1, pad1)
         pg.draw.rect(SCREEN, color2, pad2)
-        pg.draw.rect(SCREEN, WHITE, ball)
+        pg.draw.rect(SCREEN, ball_color, ball)
 
         #Reset
         if reset:
             #Wins
             if score1 == 5:
-                claps.play()
                 centertxt = bigfont.render('PLAYER 1 WINS!', True, WHITE)
                 centertxtRect = centertxt.get_rect()
                 centertxtRect.center = (WIDTH/2, HEIGHT/3)
@@ -217,7 +228,6 @@ while run:
                     reset = False
                     game = False
             elif score2 == 5:
-                claps.play()
                 centertxt = bigfont.render('PLAYER 2 WINS!', True, WHITE)
                 centertxtRect = centertxt.get_rect()
                 centertxtRect.center = (WIDTH/2, HEIGHT/3)
