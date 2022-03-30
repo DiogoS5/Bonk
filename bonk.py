@@ -1,14 +1,3 @@
-'''player1 = font.render('Player 1', True, WHITE)
-player1Rect = player1.get_rect()
-player1Rect.center = (250, 450)
-
-Player2 = fot.render('Player 2', True, WHite)
-Player2Rect = player2.get_rect()
-Player2Rect.center = (750, 450)
-
-red1 = pg.Rect(50, 550, pad_width, pad_height)
-green1 = pg.Rect(100'''
-
 import pygame as pg
 import random, os
 from math import sqrt
@@ -24,11 +13,12 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
-YELLOW = (255, 255, 255)
+YELLOW = (255, 255, 0)
 PINK = (255,182,193)
 ORANGE = (249, 142, 29)
 GULF = (201, 223, 236)
-color = GREEN
+color1 = WHITE
+color2 = WHITE
 
 #Screen
 SCREEN = pg.display.set_mode([WIDTH, HEIGHT])
@@ -37,30 +27,46 @@ SCREEN.fill((BLACK))
 
 #MENU SETUP
 #Buttons
-font = pg.font.SysFont('suigeneris', 60)
-start = font.render('START', True, WHITE)
+bigfont = pg.font.SysFont('suigeneris', 60)
+smallfont = pg.font.SysFont('suigeneris', 40)
+start = bigfont.render('START', True, WHITE)
 startRect = start.get_rect()
 startRect.center = (WIDTH/2, HEIGHT/2)
-
+player1 = smallfont.render('Player 1', True, WHITE)
+player1Rect = player1.get_rect()
+player1Rect.topleft = (50, 200)
+player2 = smallfont.render('Player 2', True, WHITE)
+player2Rect = player2.get_rect()
+player2Rect.topright = (1000 - 50 , 200)
+pad_width = 10
+pad_height = 80
+red1 = pg.Rect(100, 300, pad_width, pad_height)
+yellow1 = pg.Rect(120, 300, pad_width, pad_height)
+green1 = pg.Rect(140, 300, pad_width, pad_height)
+blue1 = pg.Rect(160, 300, pad_width, pad_height)
+blue2 = pg.Rect(WIDTH - 10 - 100, 300, pad_width, pad_height)
+green2 = pg.Rect(WIDTH - 10  - 120, 300, pad_width, pad_height)
+yellow2 = pg.Rect(WIDTH - 10  - 140, 300, pad_width, pad_height)
+red2 = pg.Rect(WIDTH - 10  - 160, 300, pad_width, pad_height)
 #GAME SETUP
 #sounds
 hitsound = pg.mixer.Sound('audio/hitsound.wav')
-ps2 = pg.mixer.Sound('audio/ps2.wav')
+claps  = pg.mixer.Sound('audio/claps.wav')
 #music
 giorgio = pg.mixer.music.load('audio/giorgio.mp3')
-
+darude = pg.mixer.music.load('audio/darude.mp3')
 #countdown
 count = '3'
-centertxt = font.render(count, True, WHITE)
+centertxt = bigfont.render(count, True, WHITE)
 centertxtRect = centertxt.get_rect()
 centertxtRect.center = (WIDTH/2, HEIGHT/3)
 #Scoreboard
 score1 = 0
-score1txt = font.render(str(score1), True, WHITE)
+score1txt = bigfont.render(str(score1), True, WHITE)
 score1txtRect = score1txt.get_rect()
 score1txtRect.center = (200, 50)
 score2 = 0
-score2txt = font.render(str(score2), True, WHITE)
+score2txt = bigfont.render(str(score2), True, WHITE)
 score2txtRect = score2txt.get_rect()
 score2txtRect.center = (WIDTH-200, 50)
 
@@ -68,13 +74,11 @@ score2txtRect.center = (WIDTH-200, 50)
 ball_width = 10
 ball_height = 10
 ball = pg.Rect((WIDTH-ball_width)/2, (HEIGHT-ball_height)/2, ball_width, ball_height)
-ball_speed_default = 7
+ball_speed_default = 8
 ball_speed = ball_speed_default
 ball_speed_y = 0
 ball_speed_x = 0
 #Paddles
-pad_width = 10
-pad_height = 80
 pad_speed = 5
 #Paddle 1
 pad1 = pg.Rect(50,(HEIGHT-pad_height)/2, pad_width, pad_height)
@@ -82,25 +86,20 @@ pad1 = pg.Rect(50,(HEIGHT-pad_height)/2, pad_width, pad_height)
 pad2 = pg.Rect(WIDTH-50,(HEIGHT-pad_height)/2, pad_width, pad_height)
 
 #Settings
-click = (0, 0)
 clock = pg.time.Clock()
-SCREEN.fill((BLACK))
-
 
 
 #Run Loop
 run = True
 menu = True
 game = False
-ps2.play()
 pg.mixer.music.play()
 while run:
+    click = (500, 0)
+    SCREEN.fill((BLACK))
     #Menu
     while menu:
         clock.tick(FPS)
-        SCREEN.fill(BLACK)
-        #Buttons
-        SCREEN.blit(start, startRect)
         #Events
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -108,8 +107,47 @@ while run:
                 run = False
             if event.type == pg.MOUSEBUTTONDOWN:
                 click = pg.mouse.get_pos()
+        #Draw
+        SCREEN.blit(start, startRect)
+        SCREEN.blit(player1, player1Rect)
+        SCREEN.blit(player2, player2Rect)
+        if click[0] <= 500:
+            pg.draw.rect(SCREEN, RED, red1)
+            pg.draw.rect(SCREEN, YELLOW, yellow1)
+            pg.draw.rect(SCREEN, GREEN, green1)
+            pg.draw.rect(SCREEN, BLUE, blue1)
+        if click[0] >= 500:
+            pg.draw.rect(SCREEN, RED, red2)
+            pg.draw.rect(SCREEN, YELLOW, yellow2)
+            pg.draw.rect(SCREEN, GREEN, green2)
+            pg.draw.rect(SCREEN, BLUE, blue2)
         #Clicks
-        if startRect.left <= click[0] <= startRect.right and startRect.top <= click[1] <= startRect.bottom:
+        if red1.collidepoint(click):
+            color1 = RED
+            pg.draw.rect(SCREEN, BLACK, red1)
+        if yellow1.collidepoint(click):
+            color1 = YELLOW
+            pg.draw.rect(SCREEN, BLACK, yellow1)
+        if green1.collidepoint(click):
+            color1 = GREEN
+            pg.draw.rect(SCREEN, BLACK, green1)
+        if blue1.collidepoint(click):
+            color1 = BLUE
+            pg.draw.rect(SCREEN, BLACK, blue1)
+        if red2.collidepoint(click):
+            color2 = RED
+            pg.draw.rect(SCREEN, BLACK, red2)
+        if yellow2.collidepoint(click):
+            color2 = YELLOW
+            pg.draw.rect(SCREEN, BLACK, yellow2)
+        if green2.collidepoint(click):
+            color2 = GREEN
+            pg.draw.rect(SCREEN, BLACK, green2)
+        if blue2.collidepoint(click):
+            color2 = BLUE
+            pg.draw.rect(SCREEN, BLACK, blue2)
+            
+        if startRect.collidepoint(click):
             click = (0,0)
             menu = False
             game = True
@@ -123,19 +161,22 @@ while run:
     while game:
         clock.tick(FPS)
         SCREEN.fill((BLACK))
-        score1txt = font.render(str(score1), True, WHITE)
-        score2txt = font.render(str(score2), True, WHITE)
+        score1txt = bigfont.render(str(score1), True, WHITE)
+        score2txt = bigfont.render(str(score2), True, WHITE)
         SCREEN.blit(score1txt, score1txtRect)
         SCREEN.blit(score2txt, score2txtRect)    
+
         #Draw
-        pg.draw.rect(SCREEN, color, pad1)
-        pg.draw.rect(SCREEN, color, pad2)
+        pg.draw.rect(SCREEN, color1, pad1)
+        pg.draw.rect(SCREEN, color2, pad2)
         pg.draw.rect(SCREEN, WHITE, ball)
 
         #Reset
         if reset:
+            #Wins
             if score1 == 5:
-                centertxt = font.render('PLAYER 1 WINS!', True, WHITE)
+                claps.play()
+                centertxt = bigfont.render('PLAYER 1 WINS!', True, WHITE)
                 centertxtRect = centertxt.get_rect()
                 centertxtRect.center = (WIDTH/2, HEIGHT/3)
                 SCREEN.blit(centertxt, centertxtRect)
@@ -147,7 +188,8 @@ while run:
                     reset = False
                     game = False
             elif score2 == 5:
-                centertxt = font.render('PLAYER 2 WINS!', True, WHITE)
+                claps.play()
+                centertxt = bigfont.render('PLAYER 2 WINS!', True, WHITE)
                 centertxtRect = centertxt.get_rect()
                 centertxtRect.center = (WIDTH/2, HEIGHT/3)
                 SCREEN.blit(centertxt, centertxtRect)
@@ -158,6 +200,7 @@ while run:
                     menu = True
                     reset = False
                     game = False
+            #Reset
             else:
                 time_delta = pg.time.get_ticks() - reset_time
                 if time_delta < 500:
@@ -171,7 +214,7 @@ while run:
                     ball_speed_x = int(sqrt(ball_speed**2 - abs(ball_speed_y)**2))
                     ball_speed_x *= random.choice([-1, 1])
                     reset = False
-                centertxt = font.render(count, True, WHITE)
+                centertxt = bigfont.render(count, True, WHITE)
                 centertxtRect = centertxt.get_rect()
                 centertxtRect.center = (WIDTH/2, HEIGHT/3)
                 SCREEN.blit(centertxt, centertxtRect)
