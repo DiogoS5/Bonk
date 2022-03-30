@@ -124,6 +124,11 @@ while run:
         SCREEN.blit(player1, player1Rect)
         SCREEN.blit(player2, player2Rect)
         SCREEN.blit(skin, skinRect)
+        
+        pg.draw.rect(SCREEN, YELLOW, skin1)
+        pg.draw.rect(SCREEN, GREEN, skin2)
+        pg.draw.rect(SCREEN, BLUE, skin3)
+        
         if click[0] <= 500:
             pg.draw.rect(SCREEN, RED, red1)
             pg.draw.rect(SCREEN, YELLOW, yellow1)
@@ -136,7 +141,15 @@ while run:
             pg.draw.rect(SCREEN, BLUE, blue2)
         #Clicks
         if skin1.collidepoint(click): 
-            
+            ball_color = YELLOW
+            pg.draw.rect(SCREEN, BLACK, skin1)
+        if skin2.collidepoint(click): 
+            ball_color = GREEN
+            pg.draw.rect(SCREEN, BLACK, skin2)
+         
+        if skin3.collidepoint(click): 
+            ball_color = BLUE
+            pg.draw.rect(SCREEN, BLACK, skin3)
         
         if red1.collidepoint(click):
             color1 = RED
